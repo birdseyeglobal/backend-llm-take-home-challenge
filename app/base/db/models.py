@@ -13,4 +13,5 @@ for name, obj in inspect.getmembers(current_module):
 
 __all__ = [
     "Brand",
+    "SQLModel",
 ]

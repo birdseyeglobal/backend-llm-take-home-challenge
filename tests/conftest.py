@@ -3,7 +3,7 @@ from .init import POSTGRES_CONTAINER_PORT  # noqa: I001
 
 import os
 import socket
-from collections.abc import Callable, Generator
+from collections.abc import Generator
 from contextlib import contextmanager
 
 import pytest
@@ -98,9 +98,11 @@ def engine(
     # TODO: load mock data into db
     yield engine
 
+
 def yield_database_session(engine: Engine) -> Generator[Session, None, None]:
     with Session(engine) as session:
         yield session
+
 
 @contextmanager
 def database_session(engine: Engine) -> Generator[Session, None, None]:
@@ -121,6 +123,7 @@ def session_fixture(engine: Engine) -> Generator[Session, None, None]:
             if session.in_transaction():
                 session.rollback()
             session.close()
+
 
 @pytest.fixture(name="client")
 def client_fixture(

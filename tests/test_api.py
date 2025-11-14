@@ -28,9 +28,4 @@ def test_routes(
         f"/{route}",
     )
 
-    if route == "openapi.json":
-        with open("openapi.json", "w") as f:
-            json.dump(response.json(), f)
-        os.remove("openapi.json")
-
     assert response.status_code == expected_status_code

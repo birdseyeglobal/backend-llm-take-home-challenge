@@ -9,8 +9,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi_pagination import add_pagination
 
-from app.base.config import settings
 from app.base.api.routes import router as api_router
+from app.base.config import settings
 
 
 def run_migrations() -> None:
@@ -43,6 +43,7 @@ if settings.ENV == "dev":
     @app.get("/public/openapi.json", include_in_schema=False)
     def custom_openapi() -> JSONResponse:
         return JSONResponse(app.openapi())
+
 
 app.include_router(api_router, prefix="/public")
 add_pagination(app)

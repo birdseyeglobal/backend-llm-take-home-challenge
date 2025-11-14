@@ -6,7 +6,7 @@ from alembic import context
 from dotenv import load_dotenv
 from sqlalchemy import engine_from_config, pool, text
 
-from app.base.config import settings  # noqa: F401 # Ensure alembic uses the app logger
+from app.base.config import settings  # Ensure alembic uses the app logger
 from app.base.db.models import SQLModel
 
 # this is the Alembic Config object, which provides

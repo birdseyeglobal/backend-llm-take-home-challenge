@@ -3,6 +3,7 @@ from sqlmodel import Session
 
 from app.brand.db.models import Brand
 
+
 def test_api(
     client: TestClient,
     session: Session,
@@ -16,7 +17,7 @@ def test_api(
     )
     assert post_response.status_code == 200
     post_response_json = post_response.json()
-    
+
     assert post_response_json.get("id") is not None
     assert post_response_json.get("url") == "https://www.google.com/"
     assert post_response_json.get("docs") == ["https://www.google.com/docs/about/"]

@@ -6,6 +6,7 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 
 from app.base.config import settings
 
+
 @retry(wait=wait_exponential(min=1, max=20), stop=stop_after_attempt(6))
 def create_engine_with_retry(**kwargs: Any) -> Engine:
     return create_engine(
@@ -23,5 +24,6 @@ def create_engine_with_retry(**kwargs: Any) -> Engine:
         },
         **kwargs,
     )
+
 
 engine = create_engine_with_retry(pool_size=4, max_overflow=4)
