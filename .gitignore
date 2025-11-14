@@ -1,0 +1,7 @@
+brand_*.json
+report_*/
+content_pillars/
+articles/
+testdoc.pdf
+.vscode/
+.env
