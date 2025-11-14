@@ -1,0 +1,134 @@
+[tool.poetry]
+name = "app"
+version = "0.1.0"
+description = "Brand voice service"
+authors = ["sfrey1 <sfrey@birdseyeglobal.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.11.x"
+uvicorn = {extras = ["standard"], version = "^0.24.0.post1"}
+pydantic-settings = "^2.1.0"
+alembic = "^1.13.0"
+psycopg2-binary = "^2.9.9"
+pydantic = {extras = ["email"], version = "~2.11.9"}
+python-dotenv = "^1.0.0"
+pydantic-extra-types = "^2.9.0"
+fastapi-pagination = "^0.14.1"
+sql-formatter = "^0.6.2"
+alembic-postgresql-enum = "^1.7.0"
+asyncpg = "^0.30.0"
+python-multipart = "^0.0.20"
+requests = "^2.32.3"
+sqlmodel = "^0.0.27"
+tenacity = "^9.1.2"
+httpx = "^0.28.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+testcontainers-postgres = "^0.0.1rc1"
+ruff = "^0.9.9"
+mypy = "^1.8.0"
+pytest-cov = "^4.1.0"
+better-exceptions = "^0.3.3"
+rich = {extras = ["console"], version = "^14.2.0"}
+nox = "^2023.4.22"
+nox-poetry = "^1.0.3"
+pytest-timeout = "^2.3.1"
+pytest-asyncio = "^0.21.1"
+pytest-lazy-fixture = "^0.6.3"
+types-requests = "^2.32.4.20250913"
+debugpy = "^1.8.17"
+time-machine = "^2.19.0"
+
+[[tool.poetry.source]]
+name = "internal"
+url = "https://northamerica-northeast1-python.pkg.dev/birdseye-org-infra/python-internal/simple/"
+priority = "supplemental"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "app/protos/v1/*.py",
+    "scratch/**"
+]
+
+# Same as Black.
+line-length = 88
+indent-width = 4
+
+# Assume Python 3.11
+target-version = "py311"
+
+[tool.ruff.lint]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
+# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
+# McCabe complexity (`C901`) by default.
+select = ["E4", "E7", "E9", "F", "I", "UP", "RUF", "C90", "FAST", "B904"]
+ignore = []
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.mypy]
+disable_error_code = ["no-any-return"]
+plugins = ["pydantic.mypy"]
+strict = true
+ignore_missing_imports = true
+show_error_codes = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+warn_return_any = true
+packages = ["app"]
+exclude = [".+_pb2.py", "x.py", "scratch/*"]
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true

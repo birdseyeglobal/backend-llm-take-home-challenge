@@ -1,307 +1,356 @@
-# Brand Voice API — Take-Home Assignment
+# Brand Voice API — Live Coding Challenge
 
-**Time window:** ~1 week (we’re not tracking hours; please be thoughtful with scope).  
+**Time window:** 1 hour (live coding session)  
+**Pre-interview prep:** You'll receive this repository ~2 days before your interview to familiarize yourself with the codebase, setup, and requirements.
 
-**Primary focus:** backend design & implementation, typed Python, web APIs, persistence, and an LLM integration with tool calling (MCP or custom).
+**Primary focus:** backend implementation, typed Python, LLM integration, and code quality.
 
-**Guidlines:** Given the time constraint we expect you to use AI to help you co-develop your solution. Your solution should still contain elements that showcase your own skill as an engineer. If you submit a solution that doesn't showcase your abilities in accordance with the rubric, you will not be successful. We chose this problem because of the many ways that an engineer could run with the idea and produce a solution that showcases their skill in a domain that's core to our product offering. Outside of the core objective, everything is open to interpretation. This readme is here to guide your thinking but if you already have some strong ideas for designing a system that meets the core objective, go for it!
+**Guidelines:** This is a live coding session where you'll implement a brand voice generation endpoint. We've provided a working starter codebase with brands already implemented. Use AI assistance if you'd like—we want to see how you work in a realistic environment. We'll evaluate your problem-solving approach, code quality, testing mindset, and ability to integrate with existing patterns.
 
 ---
 
 ## 1) Objective
 
-Build a small, well-architected web service that infers and manages a brand’s “voice” (e.g., warmth, seriousness, technicality) and evaluates sample text against that voice. We will evaluate your design, code quality, correctness, tests, and practical engineering judgment.
+Implement an endpoint that generates a "brand voice profile" for an existing brand using an LLM. The profile should analyze provided writing samples and generate metrics like warmth, seriousness, technicality, formality, and playfulness.
 
-You’re free to use equivalent technologies, but we list our stack below to indicate our environment and expectations.
+**What's already built:**
+- Brand creation and retrieval endpoints (`POST /public/api/brands`, `GET /public/api/brands/{id}`)
+- Database models and migrations for brands
+- FastAPI application structure with proper layering
+- Test infrastructure with pytest
 
----
-
-## 2) Our Stack (for context, not a hard requirement)
-
-We build on:
-
-- Python 3.11, FastAPI, Pydantic v2, SQLModel (+ SQLAlchemy)  
-- Postgres (+ Alembic migrations)  
-- Pytest, mypy, ruff, tenacity (retries)  
-- LLMs via a Ports/Adapters pattern, Responses API or similar, and function/tool calling (or MCP)
-
-You may use another web framework, schema library, or ORM if you prefer. Just document why, and maintain the same quality bar: types, tests, migrations, and clean layering.
+**What you'll build:**
+- `POST /public/api/brands/{brand_id}/voices:generate` endpoint
+- `VoiceProfile` data model with versioning
+- LLM integration to analyze writing samples and generate voice profiles
+- Tests for your implementation
 
 ---
 
-## 3) What You Will Build
+## 2) Tech Stack
 
-A REST API service that can:
+This project uses:
 
-- **Create & retrieve brands**
-- **Generate a “Brand Voice Profile”** using an LLM, based on site content and/or writing samples  
+- **Python 3.11** with FastAPI, Pydantic v2, SQLModel
+- **Postgres** with Alembic migrations (testcontainers for tests)
+- **Pytest** for testing, mypy for type checking, ruff for linting
+- **Poetry** for dependency management
+
+You should follow the existing patterns in the codebase for consistency.
+
+---
+
+## 3) Getting Started
+
+### Prerequisites
+- Python 3.11
+- Poetry (`pip install poetry`)
+- Docker (for running tests with Postgres)
+
+### Installation
+
+1. **Install dependencies:**
+```bash
+poetry install
+```
+
+2. **Activate the virtual environment:**
+```bash
+poetry shell
+```
+
+3. **Run the application:**
+```bash
+./start_service_dev.sh
+```
+
+The API will be available at `http://localhost:3070`. View API docs at `http://localhost:3070/docs`.
+
+You can specify a custom port: `./start_service_dev.sh 8000`
+
+### Running Tests
+
+Run all tests:
+```bash
+pytest
+```
+
+Run tests with coverage:
+```bash
+pytest --cov=app --cov-report=term
+```
+
+Run specific test file:
+```bash
+pytest tests/test_brand.py -v
+```
+
+### Static Analysis
+
+**Linting with ruff:**
+```bash
+ruff check .
+ruff format .
+```
+
+**Type checking with mypy:**
+```bash
+mypy app
+```
+
+**Run all checks with nox:**
+```bash
+nox -s ruff    # Linting and formatting
+nox -s mypy    # Type checking
+nox -s test    # Tests with coverage
+```
+
+---
+
+## 4) What You'll Implement
+
+You need to build a voice profile generation system:
+
+- **Generate a "Brand Voice Profile"** using an LLM based on writing samples  
   - **Metrics (floats 0–1):** warmth, seriousness, technicality, formality, playfulness  
   - **Qualitative:** `target_demographic` (short paragraph), `style_guide` (bulleted list), `writing_example` (3–6 sentences)  
   - **Versioned per brand** (`version: int`), immutable histories
-- **Evaluate a text sample** against a brand voice (return metric deltas and suggestions)
-- **Tool calling for content acquisition**
-  - **Option A (preferred):** expose a tool (MCP or provider-native function calling) that fetches page text: `fetch_page_text(url) -> str`
-  - **Option B:** implement a simple HTTP fetcher inside your service and wire it as a callable tool for the LLM
-- **Store, version, and serve** all results in a relational DB with migrations
-- **Run in a deterministic “stub” mode** (no network) for CI/tests
-
-_No UI required—OpenAPI and examples are enough._
+- **Store results** in the database with proper migrations
+- **Write tests** to verify your implementation
 
 ---
 
-## 4) Minimum Data Model (extend if you like)
+## 5) Data Model to Implement
 
-You may adapt names/types, but try to preserve semantics.
+**Brand** (already implemented)
+- `id: UUID`, `url: str`, `docs: list[str]`
+- `created_at`, `updated_at`
 
-**Brand**
-- `id: UUID`, `name: str`, `canonical_url: str | None`
-- `timestamps`
-
-**VoiceProfile**
-- `id: UUID`, `brand_id: UUID (FK)`, `version: int (unique per brand)`
-- `metrics: dict[str, float]` with keys above (0–1)
+**VoiceProfile** (you need to implement this)
+- `id: UUID`, `brand_id: UUID (FK)`, `version: int`
+- `warmth: float` (0–1)
+- `seriousness: float` (0–1)
+- `technicality: float` (0–1)
+- `formality: float` (0–1)
+- `playfulness: float` (0–1)
 - `target_demographic: str`
-- `style_guide: list[str]`
+- `style_guide: list[str]` (stored as JSON)
 - `writing_example: str`
-- `llm_model: str`, `source: str` (e.g., `"site"` | `"manual"` | `"mixed"`)
-- `timestamps`
-
-**VoiceEvaluation (recommended)**
-- `id: UUID`, `brand_id: UUID`, `voice_profile_id: UUID | None`
-- `input_text: str`
-- `scores: dict[str, float]` (same keys as metrics)
-- `suggestions: list[str]`
-- `timestamps`
-
-Include constraints where appropriate (e.g., `Unique(brand_id, version)`).
+- `llm_model: str`
+- `created_at`, `updated_at`
+- `Unique constraint on (brand_id, version)`
 
 ---
 
-## 5) Required API Endpoints
+## 6) API Endpoint to Implement
 
-**POST `/brands`**  
-Create a brand.
+**POST `/public/api/brands/{brand_id}/voices:generate`**  
 
-**GET `/brands/{brand_id}`**  
-Fetch brand details.
-
-**POST `/brands/{brand_id}/voices:generate`**  
-Request body (example):
-```json
-{
-  "inputs": {
-    "urls": ["https://acme.example.com/about"],
-    "writing_samples": ["We build robots..."]
-  },
-  "llm_model": "gpt-5-mini"
-}
-```
-Produces a new `VoiceProfile` with `version = previous + 1`.
-
-**GET `/brands/{brand_id}/voices/latest`**
-
-**GET `/brands/{brand_id}/voices/{version}`**
-
-**POST `/brands/{brand_id}/voices/{version}/evaluate`**  
 Request body:
 ```json
-{ "text": "Introducing our modular arm with precision ..." }
-```
-Respond with aligned scores and suggestions.
-
-Return well-formed error responses (e.g., 422 validation, 404 not found).
-
----
-
-## 6) LLM Integration & Tooling
-
-### 6.1 Port/Adapter Interface (example)
-
-Design a small interface to keep your core logic independent of any vendor:
-
-```python
-class LLMPort(Protocol):
-    def generate_voice_profile(
-        self, *, brand: Brand, site_text: str | None, samples: list[str] | None
-    ) -> VoiceProfileData: ...
-
-    def evaluate_text(
-        self, *, voice: VoiceProfileData, text: str
-    ) -> VoiceEvaluationData: ...
+{
+  "writing_samples": [
+    "We believe in building technology that empowers everyone...",
+    "Our mission is simple: make complex things accessible..."
+  ],
+  "llm_model": "gpt-4"
+}
 ```
 
-Implement at least two adapters:
+Response (200):
+```json
+{
+  "id": "uuid",
+  "brand_id": "uuid",
+  "version": 1,
+  "warmth": 0.8,
+  "seriousness": 0.6,
+  "technicality": 0.4,
+  "formality": 0.5,
+  "playfulness": 0.7,
+  "target_demographic": "Young professionals seeking user-friendly tech solutions...",
+  "style_guide": [
+    "Use conversational, inclusive language",
+    "Emphasize accessibility and empowerment",
+    "Balance technical accuracy with approachability"
+  ],
+  "writing_example": "We're building tools that anyone can use. No technical expertise required—just bring your ideas and we'll help bring them to life.",
+  "llm_model": "gpt-4",
+  "created_at": "2024-01-15T10:30:00Z"
+}
+```
 
-- **StubLLM (required):** deterministic, no network.  
-  Must produce stable outputs for given inputs (e.g., seeded by content hash).  
-  Tests and CI use this by default.
-
-- **ProviderLLM (optional to run):** OpenAI/Anthropic/Gemini/etc.  
-  Use environment variables for credentials.  
-  Add timeouts and retries (e.g., tenacity).
-
-### 6.2 Tool Calling
-
-Expose a tool that the LLM can invoke to fetch page text:
-
-- MCP tool server or provider-native function/tool calling.
-- Validate inputs, sanitize HTML, cap payload sizes, and handle timeouts.
-
----
-
-## 7) Non-Functional Requirements
-
-- **Typing & Style:** Strong typing, mypy clean; ruff clean.  
-- **Layering:** Separate domain use-cases from web/ORM/provider details.  
-- **Persistence:** Use migrations (Alembic or equivalent).  
-- **Resilience:** Timeouts, retries, and useful error handling around LLM & tools.  
-- **Determinism:** Tests must pass offline in stub mode, consistently.  
-- **Observability:** Clear structured logs; a minimal counter or two is a plus.  
-- **Security:** Don’t log secrets; basic input validation; safe fetches.
+**Error responses:**
+- 404: Brand not found
+- 422: Validation errors (missing writing_samples, invalid data)
 
 ---
 
-## 8) How to Run & Test
+## 7) LLM Integration
 
-**Local DB**  
-Prefer Postgres (Docker Compose is great), but SQLite is acceptable for tests.
+You'll need to integrate with an LLM to analyze writing samples and generate voice profiles.
 
-**Migrations**  
-Provide commands (e.g., `alembic upgrade head`).
+**Recommended Approach:**
+- Use **LangChain**, **Pydantic AI**, or **Instructor** for LLM integration (or any other framework you prefer)
+- These libraries handle structured output, error handling, and retries for you
+- Focus on crafting a good prompt and parsing the response into your data model
 
-**App**  
-Run the API server; expose `/docs` for OpenAPI.
-
-**Tests**  
-Use StubLLM (no network).  
-Include both unit tests (core logic) and integration tests (API + DB).  
-Tests should run quickly and deterministically.
-
-**Example commands** (adapt to your project):
+**Adding dependencies:**
+You can add LLM frameworks as needed:
 ```bash
-docker compose up -d db
-alembic upgrade head
-uvicorn app.main:app --reload
-pytest -q
+poetry add langchain langchain-openai
+# or
+poetry add pydantic-ai
+# or
+poetry add instructor
+```
+
+**Example prompt idea:**
+```
+Analyze these writing samples and determine the brand's voice profile:
+[writing samples]
+
+Return metrics (0-1 scale): warmth, seriousness, technicality, formality, playfulness
+Also provide: target demographic, style guide (3-5 bullets), and an example sentence
+```
+
+**Testing approach:**
+- Mock the LLM calls in tests (most frameworks support this)
+- Or use a simple deterministic stub that returns fixed values
+- Focus on testing the endpoint logic, validation, and database operations
+
+---
+
+## 8) Implementation Checklist
+
+- [ ] Add LLM framework dependency (`poetry add langchain`/`pydantic-ai`/`instructor`)
+- [ ] Create `VoiceProfile` SQLModel in `app/brand/db/models.py`
+- [ ] Create Alembic migration for the new table
+- [ ] Create Pydantic schemas for request/response in `app/brand/api/schemas.py`
+- [ ] Implement voice generation logic using LLM framework (servicer/repository pattern)
+- [ ] Add the endpoint to `app/brand/api/routes.py`
+- [ ] Write tests for the new endpoint
+- [ ] Ensure mypy and ruff pass
+- [ ] Handle edge cases (brand not found, validation errors)
+
+---
+
+## 9) Codebase Structure
+
+Understanding the existing patterns will help you implement your solution:
+
+```
+app/
+├── base/              # Base configuration and shared utilities
+│   ├── api/
+│   │   ├── routes.py       # Main API router (includes brand router)
+│   │   └── dependencies.py # Dependency injection (e.g., get_session)
+│   ├── config.py          # Settings and configuration
+│   └── db/
+│       ├── engine.py      # Database engine setup
+│       └── models.py      # Base SQLModel classes
+└── brand/             # Brand feature module
+    ├── api/
+    │   ├── routes.py       # Brand endpoints (you'll add voice endpoint here)
+    │   ├── schemas.py      # Pydantic request/response schemas
+    │   └── servicer.py     # Business logic layer
+    └── db/
+        ├── models.py       # Brand SQLModel (add VoiceProfile here)
+        └── repository.py   # Database operations
 ```
 
 ---
 
-## 9) Deliverables
+## 10) Evaluation Criteria
 
-Source repo with:
+During the live session, we'll assess:
 
-- `/app` (or similar) service code  
-- `/migrations` (Alembic or equivalent)  
-- `/tests` (unit + integration, stub mode)  
-- `Dockerfile` and `docker-compose.yml` (or clear local runbook)  
-- `README.md` (quickstart + API usage)  
-- `DESIGN.md` (1–2 pages; see §11)  
-- `pyproject.toml` with linters/formatters/type checking
+- **Problem-solving approach (35%):** How you break down the problem, what questions you ask, your debugging process
+- **Code quality (25%):** Type safety, following existing patterns, clean code practices
+- **Implementation (20%):** Getting a working solution with proper validation and error handling
+- **Testing mindset (10%):** Writing meaningful tests, thinking about edge cases
+- **LLM integration (10%):** Sensible use of LLM frameworks and structured output
 
----
+**What we're NOT expecting in 1 hour:**
+- Perfect, production-ready code
+- Custom LLM integration or prompt engineering magic
+- Comprehensive test coverage
+- Full error handling for every edge case
+- Design documents or architectural diagrams
 
-## 10) Evaluation Rubric (weights)
-
-- **Architecture & Design (30%)**  
-  Layering, interfaces, testability, versioning model, tool/LLM integration.
-
-- **Correctness & API (20%)**  
-  Endpoints behave as specified; OpenAPI is accurate.
-
-- **Data Modeling & Persistence (15%)**  
-  Sensible schema, constraints, migrations.
-
-- **Resilience & Reliability (10%)**  
-  Timeouts/retries, graceful failures, safe scraping/tool calls.
-
-- **Code Quality (10%)**  
-  Readable, typed, maintainable, minimal complexity.
-
-- **Tests (10%)**  
-  Useful coverage; deterministic; API + unit tests.
-
-- **DX & Docs (5%)**  
-  Clear README and design notes; easy to run.
-
-We’ll also credit strong trade-off discussions in your design doc.
+**What we ARE looking for:**
+- Clean, well-typed code that follows the existing patterns
+- At least one working test
+- Thoughtful questions and trade-off discussions
+- Ability to debug and iterate
+- Practical use of LLM libraries (LangChain, Pydantic AI, etc.)
 
 ---
 
-## 11) Design Doc (what to include)
+## 11) Tips for Success
 
-In 1–2 pages, please cover:
+**Before the interview:**
+1. Clone the repo and get it running locally
+2. Run the tests to ensure your environment is set up correctly
+3. Explore the existing Brand implementation as a reference
+4. Familiarize yourself with SQLModel, FastAPI, and Alembic basics
+5. Review LangChain or Pydantic AI documentation for structured output
+6. Have an LLM API key ready (OpenAI, Anthropic, etc.) or plan to use mocked responses
 
-- Architecture diagram (optional but helpful)  
-- Ports/Adapters: how your LLM and tools are abstracted  
-- Data model: why the chosen fields & constraints  
-- Versioning strategy for voices  
-- Failure modes: timeouts, retries, bad inputs, scraping limits  
-- Determinism: how tests are kept reproducible  
-- If you deviated from our stack, explain why
-
----
-
-## 12) How to Stand Out
-
-- Thoughtful domain modeling: sensible constraints; defensive SQL; explicit enums for voice metrics  
-- Great error ergonomics: structured validation errors, consistent problem responses  
-- Idempotency & concurrency: e.g., generating the same voice twice should produce one version unless inputs change (document your choice)  
-- Observability: request IDs, log context, minimal timing metrics  
-- Security & safety: prompt‑injection‑aware scraping (sanitization), size/time limits, robust tool validation  
-- MCP implementation: clean, minimal MCP tool server + client wiring  
-- Performance considerations: pagination, stream‑safe reading, reasonable timeouts  
-- Polished tests: realistic data builders/fixtures, clear naming, test the “unhappy paths”  
-- Extensibility: make it obvious how to add another LLM vendor or tool
+**During the session:**
+1. Ask clarifying questions—we want to see your thought process
+2. Start with the data model and migrations
+3. Get a basic endpoint working first, then iterate
+4. Use the existing brand code as a reference for patterns
+5. Use LangChain/Pydantic AI for LLM calls—don't reinvent the wheel
+6. Don't overthink the prompt—a simple, clear prompt is fine
+7. Write at least one test to show your testing approach
 
 ---
 
-## 13) Time & Expectations
+## 12) Example Test Case
 
-We don’t track hours. We expect a thoughtful, scope‑aware solution you’re proud to discuss. It’s fine to note deferred items in `DESIGN.md` or TODOs—show us your prioritization.
-
----
-
-## 14) Submission
-
-Share a GitHub repo (preferred) or a tar/zip.
-
-Include a brief note with:
-
-- How to run  
-- Any known gaps  
-- Anything you’d like us to focus on during review
-
----
-
-## 15) FAQ
-
-**Do I have to use FastAPI/Pydantic/SQLModel?**  
-No. We prefer them because they’re our stack, but use equivalents if you can meet the same quality bar and document your choices.
-
-**Do I need real LLM credentials?**  
-No. StubLLM must be default and used in tests. If you add a live adapter, keep it opt‑in via env vars.
-
-**How complex should the scraper/tool be?**  
-Keep it simple: fetch text, sanitize, cap size, handle timeouts. We care more about the interface and resilience than scraping tricks.
-
-**Can I include extra endpoints or features?**  
-Sure—just don’t sacrifice quality elsewhere. Document anything nontrivial.
-
----
-
-## Appendix A — Example Types (Illustrative Only)
+Here's an example of what a test might look like (for reference):
 
 ```python
-class VoiceProfileData(TypedDict):
-    metrics: dict[str, float]  # warmth, seriousness, technicality, formality, playfulness
-    target_demographic: str
-    style_guide: list[str]
-    writing_example: str
-    llm_model: str
-    source: str  # "site" | "manual" | "mixed"
-
-class VoiceEvaluationData(TypedDict):
-    scores: dict[str, float]
-    suggestions: list[str]
+def test_generate_voice_profile(
+    client: TestClient,
+    session: Session,
+) -> None:
+    # Create a brand first
+    brand_response = client.post(
+        "/public/api/brands/",
+        json={
+            "url": "https://example.com",
+            "docs": ["https://example.com/docs"],
+        },
+    )
+    brand_id = brand_response.json()["id"]
+    
+    # Generate voice profile
+    voice_response = client.post(
+        f"/public/api/brands/{brand_id}/voices:generate",
+        json={
+            "writing_samples": [
+                "We build amazing products for everyone.",
+                "Our mission is to empower people through technology."
+            ],
+            "llm_model": "gpt-4"
+        },
+    )
+    
+    assert voice_response.status_code == 200
+    voice_data = voice_response.json()
+    
+    assert voice_data["brand_id"] == brand_id
+    assert voice_data["version"] == 1
+    assert 0 <= voice_data["warmth"] <= 1
+    assert voice_data["target_demographic"]
+    assert len(voice_data["style_guide"]) > 0
 ```
+
+---
+
+## 13) Questions?
+
+If you have any questions about the setup or requirements before your interview, please reach out to your recruiting contact. Good luck!

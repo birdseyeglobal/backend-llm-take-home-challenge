@@ -1,0 +1,11 @@
+brand_*.json
+report_*/
+content_pillars/
+articles/
+testdoc.pdf
+.vscode/
+.env
+**/__pycache__/
+.mypy_cache/
+.pytest_cache/
+.venv/
