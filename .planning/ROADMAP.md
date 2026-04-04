@@ -48,8 +48,15 @@ Plans:
 
 ### Deliverables
 - `pyproject.toml` + `poetry.lock` — LLM library added
+- `app/base/config.py` — PYDANTIC_AI_GATEWAY_API_KEY setting
+- `app/brand/api/schemas.py` — VoiceProfileLLMResult schema added
 - `app/brand/api/servicer.py` — generate_voice_profile() method
 - `app/brand/api/routes.py` — new route registered
+
+**Plans:** 1 plan
+
+Plans:
+- [ ] 02-01-PLAN.md — Install pydantic-ai, add gateway key setting, VoiceProfileLLMResult schema, generate_voice_profile() servicer method, POST /{brand_id}/voices:generate route
 
 ### Success Criteria
 - [ ] POST /public/api/brands/{brand_id}/voices:generate returns 200 with valid body
