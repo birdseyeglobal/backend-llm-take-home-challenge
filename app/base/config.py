@@ -39,6 +39,7 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = ""
     ANTHROPIC_API_KEY: str = ""
     PPLX_API_KEY: str = ""
+    PYDANTIC_AI_GATEWAY_API_KEY: str = ""
 
     OPENAI_RATE_LIMIT: int = 5000
     GEMINI_RATE_LIMIT: int = 7000

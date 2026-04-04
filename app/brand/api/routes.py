@@ -5,7 +5,13 @@ from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
 from app.base.api.dependencies import get_session
-from app.brand.api.schemas import BrandGetResponse, BrandPostRequest, BrandPostResponse
+from app.brand.api.schemas import (
+    BrandGetResponse,
+    BrandPostRequest,
+    BrandPostResponse,
+    VoiceGenerateRequest,
+    VoiceProfileResponse,
+)
 from app.brand.api.servicer import BrandServicer
 
 router = APIRouter(
@@ -27,3 +33,13 @@ def get_brand(
 ) -> BrandGetResponse:
     servicer = BrandServicer()
     return servicer.get_brand(brand_id, session)
+
+
+@router.post("/{brand_id}/voices:generate")
+def generate_voice_profile(
+    brand_id: UUID,
+    request: VoiceGenerateRequest,
+    session: Annotated[Session, Depends(get_session)],
+) -> VoiceProfileResponse:
+    servicer = BrandServicer()
+    return servicer.generate_voice_profile(brand_id, request, session)

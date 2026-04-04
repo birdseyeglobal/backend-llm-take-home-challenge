@@ -6,7 +6,7 @@ import os
 from nox_poetry import Session, session
 
 
-@session(python=["3.11.4"])
+@session(python=["3.13.5"])
 def ruff(session: Session) -> None:
     """Run the linter."""
     session.run_always("poetry", "install", external=True)
@@ -43,7 +43,7 @@ def prettier(session: Session) -> None:
     )
 
 
-@session(python=["3.11.4"])
+@session(python=["3.13.5"])
 def mypy(session: Session) -> None:
     """Run the type checker."""
     session.run_always("poetry", "install", external=True)
@@ -55,7 +55,7 @@ def mypy(session: Session) -> None:
     )
 
 
-@session(python=["3.11.4"])
+@session(python=["3.13.5"])
 def test(session: Session) -> None:
     """Run the unit test suite."""
     session.run_always("poetry", "install", external=True)

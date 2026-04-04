@@ -4,7 +4,7 @@ import sys
 from pydantic import BaseModel
 from sqlmodel import SQLModel
 
-from app.brand.db.models import Brand
+from app.brand.db.models import Brand, VoiceProfile
 
 current_module = sys.modules[__name__]
 for name, obj in inspect.getmembers(current_module):
@@ -14,4 +14,5 @@ for name, obj in inspect.getmembers(current_module):
 __all__ = [
     "Brand",
     "SQLModel",
+    "VoiceProfile",
 ]

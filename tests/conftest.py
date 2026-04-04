@@ -125,6 +125,32 @@ def session_fixture(engine: Engine) -> Generator[Session, None, None]:
             session.close()
 
 
+@pytest.fixture(autouse=True)
+def set_dummy_llm_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Ensures pydantic-ai can construct the gateway Agent during VCR replay.
+    The key is never sent over the network — VCR intercepts before it leaves the process."""
+    monkeypatch.setenv("PYDANTIC_AI_GATEWAY_API_KEY", "test-vcr-key")
+
+
+@pytest.fixture(scope="module")
+def vcr_config() -> dict:
+    # On CI (record_mode=none), tests replay from committed cassettes only.
+    # Locally (record_mode=once), cassettes are recorded on first run when
+    # PYDANTIC_AI_GATEWAY_API_KEY is set, then replayed on subsequent runs.
+    import os
+
+    record_mode = "none" if os.getenv("CI") else "once"
+    return {
+        "record_mode": record_mode,
+        "filter_headers": ["authorization", "x-api-key"],
+    }
+
+
+@pytest.fixture(scope="module")
+def vcr_cassette_dir(request: pytest.FixtureRequest) -> str:
+    return str(request.fspath.dirpath("cassettes"))
+
+
 @pytest.fixture(name="client")
 def client_fixture(
     session: Session,
