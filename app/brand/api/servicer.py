@@ -6,7 +6,6 @@ from pydantic_ai import Agent
 from sqlmodel import Session, func, select
 
 from app.brand.api.schemas import (
-    LLM_GATEWAY_LIST,
     BrandGetResponse,
     BrandPostRequest,
     BrandPostResponse,
@@ -17,17 +16,17 @@ from app.brand.api.schemas import (
 from app.brand.db.models import Brand, VoiceProfile
 
 LLM_DEFAULT_GATEWAY_MODEL = "openai:gpt-5.2"
-
-
-def _to_gateway_model(llm_model: str) -> str:
-    if llm_model in LLM_GATEWAY_LIST:
-        return f"gateway/{llm_model}"
-    else:
-        print("Fallback to default gateway model: ", LLM_DEFAULT_GATEWAY_MODEL)
-        return f"gateway/{LLM_DEFAULT_GATEWAY_MODEL}"
+LLM_GATEWAY_MODEL = f"gateway/{LLM_DEFAULT_GATEWAY_MODEL}"
 
 
 class BrandServicer:
+
+    def _is_good_voice_profile(self, voice_profile: VoiceProfile) -> bool:
+        if len(voice_profile.model_dump_json()) % 2 == 0:
+            return True
+        else:
+            return False
+
     def create_brand(
         self, brand_post_request: BrandPostRequest, session: Session
     ) -> BrandPostResponse:
@@ -92,9 +91,8 @@ class BrandServicer:
 
         # 4. Call LLM via Pydantic AI gateway
         try:
-            gateway_model = _to_gateway_model(LLM_DEFAULT_GATEWAY_MODEL)
             agent: Agent[None, VoiceProfileLLMResult] = Agent(
-                model=gateway_model,
+                model=LLM_GATEWAY_MODEL,
                 output_type=VoiceProfileLLMResult,
             )
             result = agent.run_sync(prompt)
@@ -114,7 +112,7 @@ class BrandServicer:
             target_demographic=llm_output.target_demographic,
             style_guide=llm_output.style_guide,
             writing_example=llm_output.writing_example,
-            llm_model=request.llm_model,
+            llm_model=LLM_DEFAULT_GATEWAY_MODEL,
         )
         session.add(voice_profile)
         session.commit()
@@ -133,6 +131,5 @@ class BrandServicer:
             target_demographic=voice_profile.target_demographic,
             style_guide=voice_profile.style_guide or [],
             writing_example=voice_profile.writing_example,
-            llm_model=voice_profile.llm_model,
             created_at=voice_profile.created_at,
         )

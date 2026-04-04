@@ -1,0 +1,28 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: https://gateway.pydantic.dev/proxy/openai/chat/completions
+  response:
+    body:
+      string: '{"id": "chatcmpl-vcr001", "object": "chat.completion", "created": 1743724800,
+        "model": "gpt-5.2", "choices": [{"index": 0, "message": {"role": "assistant",
+        "content": null, "tool_calls": [{"id": "call_vcr001", "type": "function",
+        "function": {"name": "final_result", "arguments": "{\"warmth\": 0.7, \"seriousness\":
+        0.3, \"technicality\": 0.5, \"formality\": 0.4, \"playfulness\": 0.6, \"target_demographic\":
+        \"Tech-savvy professionals aged 25-40\", \"style_guide\": [\"Be concise\",
+        \"Use active voice\", \"Avoid jargon\"], \"writing_example\": \"We build great
+        software. Our team is passionate.\"}"}}]}, "finish_reason": "tool_calls"}],
+        "usage": {"prompt_tokens": 120, "completion_tokens": 80, "total_tokens": 200}}'
+    headers:
+      Content-Type:
+      - application/json
+    status:
+      code: 200
+      message: OK
+version: 1

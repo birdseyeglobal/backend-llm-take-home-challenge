@@ -2394,6 +2394,22 @@ files = [
 pytest = ">=7.0.0"
 
 [[package]]
+name = "pytest-vcr"
+version = "1.0.2"
+description = "Plugin for managing VCR.py cassettes"
+optional = false
+python-versions = "*"
+groups = ["dev"]
+files = [
+    {file = "pytest-vcr-1.0.2.tar.gz", hash = "sha256:23ee51b75abbcc43d926272773aae4f39f93aceb75ed56852d0bf618f92e1896"},
+    {file = "pytest_vcr-1.0.2-py2.py3-none-any.whl", hash = "sha256:2f316e0539399bea0296e8b8401145c62b6f85e9066af7e57b6151481b0d6d9c"},
+]
+
+[package.dependencies]
+pytest = ">=3.6.0"
+vcrpy = "*"
+
+[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 description = "Extensions to the standard Python datetime module"
@@ -2472,7 +2488,7 @@ version = "6.0.3"
 description = "YAML parser and emitter for Python"
 optional = false
 python-versions = ">=3.8"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "PyYAML-6.0.3-cp38-cp38-macosx_10_13_x86_64.whl", hash = "sha256:c2514fceb77bc5e7a2f7adfaa1feb2fb311607c9cb518dbc378688ec73d8292f"},
     {file = "PyYAML-6.0.3-cp38-cp38-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:9c57bb8c96f6d1808c030b1687b9b5fb476abaa47f0db9c0101f5e9f394e97f4"},
@@ -3320,6 +3336,25 @@ docs = ["Sphinx (>=4.1.2,<4.2.0)", "sphinx_rtd_theme (>=0.5.2,<0.6.0)", "sphinxc
 test = ["aiohttp (>=3.10.5)", "flake8 (>=6.1,<7.0)", "mypy (>=0.800)", "psutil", "pyOpenSSL (>=25.3.0,<25.4.0)", "pycodestyle (>=2.11.0,<2.12.0)"]
 
 [[package]]
+name = "vcrpy"
+version = "8.1.1"
+description = "Automatically mock your HTTP interactions to simplify and speed up testing"
+optional = false
+python-versions = ">=3.10"
+groups = ["dev"]
+files = [
+    {file = "vcrpy-8.1.1-py3-none-any.whl", hash = "sha256:2d16f31ad56493efb6165182dd99767207031b0da3f68b18f975545ede8ac4b9"},
+    {file = "vcrpy-8.1.1.tar.gz", hash = "sha256:58e3053e33b423f3594031cb758c3f4d1df931307f1e67928e30cf352df7709f"},
+]
+
+[package.dependencies]
+PyYAML = "*"
+wrapt = "*"
+
+[package.extras]
+tests = ["aiohttp", "boto3", "cryptography", "httpbin", "httpcore", "httplib2", "httpx", "pycurl ; platform_python_implementation != \"PyPy\"", "pytest", "pytest-aiohttp", "pytest-asyncio", "pytest-cov", "pytest-httpbin", "requests (>=2.22.0)", "tornado", "urllib3", "werkzeug (==2.0.3)"]
+
+[[package]]
 name = "virtualenv"
 version = "20.35.4"
 description = "Virtual Python Environment builder"
@@ -3684,4 +3719,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "3.13.5"
-content-hash = "824727bde6c404fb31ea314d3871572b327ef6f5e3478d32731b43ddbb59a52a"
+content-hash = "4fa678b5930983ec4f56165a21f5bbba9672b45237d3c5bc5493f04c50123ec8"

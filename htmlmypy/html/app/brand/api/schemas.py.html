@@ -63,8 +63,6 @@
 <span id="L53" class="lineno"><a class="lineno" href="#L53">53</a></span>
 <span id="L54" class="lineno"><a class="lineno" href="#L54">54</a></span>
 <span id="L55" class="lineno"><a class="lineno" href="#L55">55</a></span>
-<span id="L56" class="lineno"><a class="lineno" href="#L56">56</a></span>
-<span id="L57" class="lineno"><a class="lineno" href="#L57">57</a></span>
 </pre></td>
 <td class="table-code"><pre><span class="line-precise" title="No Anys on this line!">from datetime import datetime</span>
 <span class="line-precise" title="No Anys on this line!">from uuid import UUID</span>
@@ -93,7 +91,6 @@
 <span class="line-empty" title="No Anys on this line!"></span>
 <span class="line-precise" title="No Anys on this line!">class VoiceGenerateRequest(BaseModel):</span>
 <span class="line-precise" title="No Anys on this line!">    writing_samples: list[str]</span>
-<span class="line-precise" title="No Anys on this line!">    llm_model: str</span>
 <span class="line-empty" title="No Anys on this line!"></span>
 <span class="line-empty" title="No Anys on this line!"></span>
 <span class="line-precise" title="No Anys on this line!">class VoiceProfileResponse(BaseModel):</span>
@@ -118,7 +115,6 @@ Omitted Generics (x5)">    playfulness: float = Field(ge=0.0, le=1.0)</span>
 <span class="line-precise" title="No Anys on this line!">    target_demographic: str</span>
 <span class="line-precise" title="No Anys on this line!">    style_guide: list[str]</span>
 <span class="line-precise" title="No Anys on this line!">    writing_example: str</span>
-<span class="line-precise" title="No Anys on this line!">    llm_model: str</span>
 <span class="line-precise" title="No Anys on this line!">    created_at: datetime</span>
 <span class="line-empty" title="No Anys on this line!"></span>
 <span class="line-precise" title="No Anys on this line!">    model_config = {"from_attributes": True}</span>

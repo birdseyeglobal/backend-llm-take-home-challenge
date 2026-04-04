@@ -3,12 +3,6 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field, HttpUrl
 
-LLM_GATEWAY_LIST = [
-    "anthropic:claude-sonnet-4-6",
-    "google:gemini-3-flash-preview",
-    "openai:gpt-5.2",
-]
-
 
 class BrandPostRequest(BaseModel):
     url: HttpUrl | None
@@ -31,7 +25,6 @@ class BrandGetResponse(BrandResponse):
 
 class VoiceGenerateRequest(BaseModel):
     writing_samples: list[str]
-    llm_model: str
 
 
 class VoiceProfileResponse(BaseModel):
@@ -46,7 +39,6 @@ class VoiceProfileResponse(BaseModel):
     target_demographic: str
     style_guide: list[str]
     writing_example: str
-    llm_model: str
     created_at: datetime
 
     model_config = {"from_attributes": True}

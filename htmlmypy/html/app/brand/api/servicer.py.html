@@ -136,16 +136,6 @@
 <span id="L126" class="lineno"><a class="lineno" href="#L126">126</a></span>
 <span id="L127" class="lineno"><a class="lineno" href="#L127">127</a></span>
 <span id="L128" class="lineno"><a class="lineno" href="#L128">128</a></span>
-<span id="L129" class="lineno"><a class="lineno" href="#L129">129</a></span>
-<span id="L130" class="lineno"><a class="lineno" href="#L130">130</a></span>
-<span id="L131" class="lineno"><a class="lineno" href="#L131">131</a></span>
-<span id="L132" class="lineno"><a class="lineno" href="#L132">132</a></span>
-<span id="L133" class="lineno"><a class="lineno" href="#L133">133</a></span>
-<span id="L134" class="lineno"><a class="lineno" href="#L134">134</a></span>
-<span id="L135" class="lineno"><a class="lineno" href="#L135">135</a></span>
-<span id="L136" class="lineno"><a class="lineno" href="#L136">136</a></span>
-<span id="L137" class="lineno"><a class="lineno" href="#L137">137</a></span>
-<span id="L138" class="lineno"><a class="lineno" href="#L138">138</a></span>
 </pre></td>
 <td class="table-code"><pre><span class="line-precise" title="No Anys on this line!">from uuid import UUID</span>
 <span class="line-empty" title="No Anys on this line!"></span>
@@ -164,16 +154,8 @@
 <span class="line-empty" title="No Anys on this line!">)</span>
 <span class="line-precise" title="No Anys on this line!">from app.brand.db.models import Brand, VoiceProfile</span>
 <span class="line-empty" title="No Anys on this line!"></span>
-<span class="line-empty" title="No Anys on this line!"></span>
-<span class="line-precise" title="No Anys on this line!">def _to_gateway_model(llm_model: str) -&gt; str:</span>
-<span class="line-precise" title="No Anys on this line!">    if llm_model.startswith("gpt-"):</span>
-<span class="line-precise" title="No Anys on this line!">        return f"gateway/openai:{llm_model}"</span>
-<span class="line-precise" title="No Anys on this line!">    elif llm_model.startswith("claude-"):</span>
-<span class="line-precise" title="No Anys on this line!">        return f"gateway/anthropic:{llm_model}"</span>
-<span class="line-precise" title="No Anys on this line!">    elif llm_model.startswith("gemini-"):</span>
-<span class="line-precise" title="No Anys on this line!">        return f"gateway/google:{llm_model}"</span>
-<span class="line-empty" title="No Anys on this line!">    else:</span>
-<span class="line-precise" title="No Anys on this line!">        return f"gateway/openai:{llm_model}"</span>
+<span class="line-precise" title="No Anys on this line!">LLM_DEFAULT_GATEWAY_MODEL = "openai:gpt-5.2"</span>
+<span class="line-precise" title="No Anys on this line!">LLM_GATEWAY_MODEL = f"gateway/{LLM_DEFAULT_GATEWAY_MODEL}"</span>
 <span class="line-empty" title="No Anys on this line!"></span>
 <span class="line-empty" title="No Anys on this line!"></span>
 <span class="line-precise" title="No Anys on this line!">class BrandServicer:</span>
@@ -250,11 +232,10 @@ Explicit (x20)">            select(func.max(VoiceProfile.version)).where(</span>
 <span class="line-empty" title="No Anys on this line!"></span>
 <span class="line-empty" title="No Anys on this line!">        # 4. Call LLM via Pydantic AI gateway</span>
 <span class="line-empty" title="No Anys on this line!">        try:</span>
-<span class="line-precise" title="No Anys on this line!">            gateway_model = _to_gateway_model(request.llm_model)</span>
 <span class="line-precise" title="Any Types on this line: 
 Error (x1)
 Explicit (x8)">            agent: Agent[None, VoiceProfileLLMResult] = Agent(</span>
-<span class="line-precise" title="No Anys on this line!">                model=gateway_model,</span>
+<span class="line-precise" title="No Anys on this line!">                model=LLM_GATEWAY_MODEL,</span>
 <span class="line-precise" title="No Anys on this line!">                output_type=VoiceProfileLLMResult,</span>
 <span class="line-empty" title="No Anys on this line!">            )</span>
 <span class="line-precise" title="Any Types on this line: 
@@ -278,7 +259,7 @@ Explicit (x1)">            raise HTTPException(status_code=500, detail=str(e)) f
 <span class="line-precise" title="No Anys on this line!">            target_demographic=llm_output.target_demographic,</span>
 <span class="line-precise" title="No Anys on this line!">            style_guide=llm_output.style_guide,</span>
 <span class="line-precise" title="No Anys on this line!">            writing_example=llm_output.writing_example,</span>
-<span class="line-precise" title="No Anys on this line!">            llm_model=request.llm_model,</span>
+<span class="line-precise" title="No Anys on this line!">            llm_model=LLM_DEFAULT_GATEWAY_MODEL,</span>
 <span class="line-empty" title="No Anys on this line!">        )</span>
 <span class="line-precise" title="No Anys on this line!">        session.add(voice_profile)</span>
 <span class="line-precise" title="No Anys on this line!">        session.commit()</span>
@@ -297,7 +278,6 @@ Explicit (x1)">            raise HTTPException(status_code=500, detail=str(e)) f
 <span class="line-precise" title="No Anys on this line!">            target_demographic=voice_profile.target_demographic,</span>
 <span class="line-precise" title="No Anys on this line!">            style_guide=voice_profile.style_guide or [],</span>
 <span class="line-precise" title="No Anys on this line!">            writing_example=voice_profile.writing_example,</span>
-<span class="line-precise" title="No Anys on this line!">            llm_model=voice_profile.llm_model,</span>
 <span class="line-precise" title="No Anys on this line!">            created_at=voice_profile.created_at,</span>
 <span class="line-empty" title="No Anys on this line!">        )</span>
 </pre></td>
