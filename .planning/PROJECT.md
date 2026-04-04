@@ -16,19 +16,29 @@ A working `POST /public/api/brands/{brand_id}/voices:generate` endpoint that cal
 - ✓ Brand retrieval endpoint (`GET /public/api/brands/{brand_id}`) — existing
 - ✓ FastAPI + SQLModel + PostgreSQL + Alembic stack — existing
 - ✓ Pytest test infrastructure with testcontainers — existing
+- ✓ `VoiceProfile` SQLModel with all 14 specified fields — v1.0
+- ✓ Unique constraint on `(brand_id, version)` — v1.0
+- ✓ Alembic migration for voice_profile table — v1.0
+- ✓ `VoiceGenerateRequest` and `VoiceProfileResponse` schemas — v1.0
+- ✓ Pydantic AI integration for structured LLM output — v1.0
+- ✓ `POST /public/api/brands/{brand_id}/voices:generate` endpoint — v1.0
+- ✓ Auto-versioning per brand — v1.0
+- ✓ 404 if brand not found — v1.0
+- ✓ Integration tests (happy path, 404, 422) — v1.0
+- ✓ mypy and ruff pass — v1.0
 
 ### Active
 
-- [ ] `VoiceProfile` SQLModel with all specified fields (id, brand_id FK, version, warmth, seriousness, technicality, formality, playfulness, target_demographic, style_guide, writing_example, llm_model, created_at, updated_at)
-- [ ] Unique constraint on `(brand_id, version)` in VoiceProfile
-- [ ] Alembic migration for voice_profile table
-- [ ] `VoiceGenerateRequest` and `VoiceProfileResponse` Pydantic schemas
-- [ ] LLM integration (LangChain / Pydantic AI / Instructor) for structured output
-- [ ] `POST /public/api/brands/{brand_id}/voices:generate` endpoint
-- [ ] Auto-versioning: each call increments version per brand
-- [ ] 404 if brand not found
-- [ ] At least one integration test for the endpoint
-- [ ] mypy and ruff pass
+(None — v2.0 requirements to be defined)
+
+### Deferred to v2.0
+
+- [ ] Voice profile retrieval endpoints (`GET /brands/{id}/voices`, `GET /brands/{id}/voices/{version}`)
+- [ ] Rate limiting on generate endpoint
+- [ ] Auth middleware wiring
+- [ ] `style_guide` length validator (3–5 items, currently prompt-only)
+- [ ] `writing_example` sentence count validator (3–6, currently prompt-only)
+- [ ] Test for version increment on second call (version == 2)
 
 ### Out of Scope
 
@@ -46,6 +56,8 @@ A working `POST /public/api/brands/{brand_id}/voices:generate` endpoint that cal
 - `app/brand/db/repository.py` is an empty stub — servicer can talk directly to session (existing pattern)
 - The README explicitly says to follow existing patterns for consistency
 
+**v1.0 shipped state:** ~200 LOC added across `app/brand/` (models, schemas, servicer, routes). Pydantic AI gateway integration via `pydantic-ai-slim`. Migration `a1b2c3d4e5f6`. 3 integration tests. mypy and ruff both clean.
+
 ## Constraints
 
 - **Tech stack:** Python 3.13.5, FastAPI, Pydantic v2, SQLModel, Alembic, Postgres — must follow existing patterns
@@ -57,9 +69,10 @@ A working `POST /public/api/brands/{brand_id}/voices:generate` endpoint that cal
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Use Pydantic AI for LLM integration | Tightest Pydantic v2 integration, minimal boilerplate for structured output | — Pending |
-| Store style_guide as JSON list | README specifies `list[str]` stored as JSONB, matches docs pattern | — Pending |
-| Implement voice endpoint on brand router | README spec: `POST /brands/{id}/voices:generate` — subresource of brand | — Pending |
+| Use Pydantic AI for LLM integration | Tightest Pydantic v2 integration, minimal boilerplate for structured output | ✓ Good |
+| Store style_guide as JSON list | README specifies `list[str]` stored as JSONB, matches docs pattern | ✓ Good |
+| Implement voice endpoint on brand router | README spec: `POST /brands/{id}/voices:generate` — subresource of brand | ✓ Good |
+| `llm_model` in request is a record/label field | Model used for inference is internally configured; caller label is stored in DB and echoed in response — not used to route the LLM call | ✓ Good |
 
 ## Evolution
 
@@ -79,4 +92,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-04 after initialization*
+*Last updated: 2026-04-04 after v1.0 milestone*
