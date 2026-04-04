@@ -20,6 +20,11 @@
 - `migrations/versions/XXXX_add_voice_profile.py` — new migration
 - `app/brand/api/schemas.py` — request/response schemas added
 
+**Plans:** 1 plan
+
+Plans:
+- [ ] 01-01-PLAN.md — VoiceProfile model, model registry update, API schemas, Alembic migration
+
 ### Success Criteria
 - [ ] `alembic upgrade head` succeeds
 - [ ] VoiceProfile table exists with all columns and unique constraint
